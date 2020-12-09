@@ -11,7 +11,7 @@ exports.getTransactions = async (req, res, next) => {
       data: transactions,
     });
   } catch (error) {
-    return res.send(500).json({
+    return res.status(500).json({
       success: false,
       error: "Server Error",
     });
@@ -29,12 +29,41 @@ exports.addTransaction = async (req, res, next) => {
       data: transaction,
     });
   } catch (error) {
-    console.log(error);
+    if (error.name === "ValidationError") {
+      const messages = Object.values(error.errors).map((val) => val.message);
+      res.status(500).json({
+        success: false,
+        error: messages,
+      });
+    } else {
+      return res.status(500).json({
+        success: false,
+        error: "Server Error",
+      });
+    }
   }
 };
 
 // @desc DELETE  transaction
 // @route DELETE /api/v1/transactions/:id
 exports.deleteTransaction = async (req, res, next) => {
-  res.send("DELETE Txns");
+  try {
+    const transaction = Transaction.findById(req.params.id);
+    if (!transaction) {
+      return res.status(400).json({
+        success: false,
+        error: "Transaction Not Found",
+      });
+    }
+    await transaction.remove();
+    return res.status(200).json({
+      success: true,
+      data: {},
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: "Server Error",
+    });
+  }
 };
