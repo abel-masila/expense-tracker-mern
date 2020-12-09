@@ -10,7 +10,7 @@ const reducer = (state, action) => {
       return {
         ...state,
         transactions: state.transactions.filter(
-          (txn) => txn.id !== action.payload
+          (txn) => txn._id !== action.payload
         ),
       };
     case "ADD_TXN":

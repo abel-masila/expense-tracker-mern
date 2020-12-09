@@ -31,17 +31,40 @@ export const GlobalProvder = ({ children }) => {
       });
     }
   }
-  function deleteTxn(id) {
-    dispatch({
-      type: "DELETE_TXN",
-      payload: id,
-    });
+  async function deleteTxn(id) {
+    try {
+      await axios.delete(`/api/v1/transactions/${id}`);
+      dispatch({
+        type: "DELETE_TXN",
+        payload: id,
+      });
+    } catch (error) {
+      dispatch({
+        type: "TXN_ERROR",
+        payload: error.response.data.error,
+      });
+    }
   }
-  function AddTxn(txn) {
-    dispatch({
-      type: "ADD_TXN",
-      payload: txn,
-    });
+
+  async function AddTxn(txn) {
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+
+    try {
+      const res = await axios.post("/api/v1/transactions", txn, config);
+      dispatch({
+        type: "ADD_TXN",
+        payload: res.data.data,
+      });
+    } catch (error) {
+      dispatch({
+        type: "TXN_ERROR",
+        payload: error.response.data.error,
+      });
+    }
   }
   return (
     <GlobalContext.Provider
