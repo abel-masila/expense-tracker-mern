@@ -1,5 +1,11 @@
 const reducer = (state, action) => {
   switch (action.type) {
+    case "GET_TXN":
+      return {
+        ...state,
+        loading: false,
+        transactions: action.payload,
+      };
     case "DELETE_TXN":
       return {
         ...state,
@@ -10,7 +16,12 @@ const reducer = (state, action) => {
     case "ADD_TXN":
       return {
         ...state,
-        transactions: [action.payload, ...state.transactions],
+        transactions: [...state.transactions, action.payload],
+      };
+    case "TXN_ERROR":
+      return {
+        ...state,
+        error: action.payload,
       };
     default:
       return state;
